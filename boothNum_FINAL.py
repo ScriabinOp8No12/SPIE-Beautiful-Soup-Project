@@ -8,6 +8,7 @@ pages = 1
 main_page_url = f'https://spie.org/conferences-and-exhibitions/photonics-west/exhibitions/photonics-west-exhibition' \
                 f'/exhibitors?term=&pageSize={exhibits_per_page}&pagesVisited={pages}&sortBy=Relevance'
 
+
 browser = webdriver.Chrome()
 browser.get(main_page_url)
 browser.implicitly_wait(10)
@@ -17,6 +18,8 @@ doc = BeautifulSoup(result, "html.parser")
 
 base_url = "https://spie.org"
 exhibit_links = doc.find_all('a', {'class': 'subtitle2 companyNameText link linkBlackToBlueNoUnderline'})
+
+# website_links = doc.find_all('a', {'class': 'link'})
 
 exhibit_urls = []
 
@@ -30,11 +33,11 @@ for link in exhibit_links:
 booth_numbers = []
 counter = 0
 
-# for url in exhibit_urls:
-for i in range(1, 100):  # these 3 lines are to test a small subsection of the output so it doesn't take 6-7 minutes to run all the booth numbers once
-    booth_url = exhibit_urls[i]
-    result = requests.get(booth_url)
-    # result = requests.get(url)
+for url in exhibit_urls:
+#for i in range(1, 100):  # these 3 lines are to test a small subsection of the output so it doesn't take 6-7 minutes to run all the booth numbers once
+    # booth_url = exhibit_urls[i]
+    # result = requests.get(booth_url)
+    result = requests.get(url)
     content = result.content
     doc = BeautifulSoup(content, 'html.parser')
 
@@ -63,6 +66,6 @@ for i in range(1, 100):  # these 3 lines are to test a small subsection of the o
             booth_numbers.append(booth_number)
 
     # counter += 1   # for bug testing -> print out counter with booth number output to figure out which ones are bugged
-print(booth_numbers)
+# print(booth_numbers)
 # print(f"Counter is: {counter}")
 

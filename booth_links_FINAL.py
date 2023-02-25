@@ -38,9 +38,10 @@ exhibit_links = doc.find_all('a', {'class': 'subtitle2 companyNameText link link
 
 # Loop through the exhibit links to get the URL of each exhibit
 exhibit_urls = []
+
 for link in exhibit_links:
     exhibit_url = base_url + link['href']
     exhibit_urls.append(exhibit_url)
 
-print(exhibit_urls)       # this is the list of links, see print output in console
-print(len(exhibit_urls))  # output is 1158, which is correct
+# print(exhibit_urls)       # this is the list of links, see print output in console
+# print(len(exhibit_urls))  # output is 1158, which is correct

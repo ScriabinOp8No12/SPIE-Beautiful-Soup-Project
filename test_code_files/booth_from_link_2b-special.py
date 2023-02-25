@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 import requests
 
-#  feed the booth links from the "booth_links.py"
+#  feed the booth links from the "booth_links_FINAL.py"
 booth_1_test = 'https://spie.org/ExhibitorDetail?ExpoID=2100&ExhibitorID=54938'
 result = requests.get(booth_1_test)
 
