@@ -3,7 +3,7 @@ from description_FINAL import description_text
 from name_location_description_FINAL import company_name, company_location
 from boothNum_FINAL import booth_numbers
 from booth_links_FINAL import exhibit_urls
-from company_contact_and_website import company_website_url, company_contact
+from company_contact_and_website_FINAL import company_website_url, company_contact
 #from company_contact_info_test import company_contact
 
 data = {
