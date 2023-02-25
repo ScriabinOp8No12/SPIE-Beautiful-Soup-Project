@@ -25,6 +25,7 @@ exhibit_links = doc.find_all('a', {'class': 'subtitle2 companyNameText link link
 company_names = doc.find_all('a', class_='subtitle2 companyNameText link linkBlackToBlueNoUnderline')
 company_descriptions = doc.find_all('div', class_='col-12 col-lg-7')
 
+
 exhibit_urls = []  # done
 booth_numbers = []  # done
 company_name = []  # done
