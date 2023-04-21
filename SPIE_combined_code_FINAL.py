@@ -6,6 +6,7 @@ from selenium import webdriver
 from bs4 import BeautifulSoup
 import requests
 import pandas as pd
+from tqdm import tqdm
 
 exhibits_per_page = 1500
 pages = 1
@@ -36,17 +37,23 @@ company_contact = []  # done
 
 # Link to company page that includes: booth numbers, contact info, company website link
 base_url = "https://spie.org"
-for link in exhibit_links:
+# Adding tqdm for all loops
+for link in tqdm(exhibit_links, position=0):
+    # print statement here to check progress
+    # print('current link', link)
+    # for i in tqdm (range(len(exhibit_links)))
+    # link = exhibit_links[i]
+    # exhibit_url = base_url + link['href']
     exhibit_url = base_url + link['href']
     exhibit_urls.append(exhibit_url)
 
 # Company Name  (modified the below from for name in company_names  --> to "for name in exhibit_links:" )
-for name in exhibit_links:
+for name in tqdm(exhibit_links, position=0):
     names = name.text
     company_name.append(names)
 
 # Company Description
-for description in company_descriptions:
+for description in tqdm(company_descriptions, position=0):
     if description.text == "":
         company_text = "No Description Found"
     else:
@@ -56,9 +63,8 @@ for description in company_descriptions:
     description_text.append(company_text)
 
 # Booth Number
-for url in exhibit_urls:
-
-    result = requests.get(url)
+for url in tqdm(exhibit_urls, position=0):
+    result = requests.get(url, stream=True)
     content = result.content
     doc = BeautifulSoup(content, 'html.parser')
 
@@ -106,6 +112,7 @@ for url in exhibit_urls:
     # some text formatting I grabbed from chatGPT, not sure why it works
     text_nodes = []
     for child in address_tag.children:
+        # don't use tqdm here because it'll get confused since this is within the outer for loop!
         text_nodes.append(child.get_text(strip=True))
 
     # join with an extra space between each "line" of text
@@ -113,15 +120,15 @@ for url in exhibit_urls:
     company_contact.append(address_text)
 
 # Output to CSV (panda dataframe below)
-
+# modified for list comprehension to use tqdm too
 data = {
     # Add index column here, or excel just works?
     'Booth Number(s)': booth_numbers,
     'Company Name': company_name,
-    'Link to Company': ['=HYPERLINK("{}")'.format(url) for url in exhibit_urls],
+    'Link to Company': ['=HYPERLINK("{}")'.format(url) for url in tqdm(exhibit_urls, position=0)],
     'Description': description_text,
     'Notes': None,
-    'Website link': ['=HYPERLINK("{}")'.format(url) for url in company_website_url],
+    'Website link': ['=HYPERLINK("{}")'.format(url) for url in tqdm(company_website_url, position=0)],
     'Company Contact Information': company_contact,
 
 }
@@ -130,6 +137,8 @@ data = {
 df = pd.DataFrame(data)
 
 # convert dataframe to csv
-df.to_csv(r'C:\Users\nharw\Desktop\SPIE_West_Revised_Faster1.csv', index=False)
+df.to_csv(r'C:\Users\nharw\Desktop\SPIE_West_tqdm_test.csv', index=False)
 
+# convert csv to .xlsx after wards to save the formatting, otherwise the links aren't clickable, and the columns reset
+# 15 minutes to run at home
 
