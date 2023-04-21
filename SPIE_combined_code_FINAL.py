@@ -8,6 +8,8 @@ import requests
 import pandas as pd
 from tqdm import tqdm
 
+print("There are 6 progress bars, the 4th one takes the longest, and the others are basically instant!")
+
 exhibits_per_page = 1500
 pages = 1
 
