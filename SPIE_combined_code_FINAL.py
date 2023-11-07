@@ -3,6 +3,8 @@
 # booth_numbers, company_name, exhibit_urls, description_text, company_website_url, company_contact
 
 from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
 import requests
 import pandas as pd
@@ -16,7 +18,9 @@ pages = 1
 main_page_url = f'https://spie.org/conferences-and-exhibitions/photonics-west/exhibitions/photonics-west-exhibition' \
                 f'/exhibitors?term=&pageSize={exhibits_per_page}&pagesVisited={pages}&sortBy=Relevance'
 
-browser = webdriver.Chrome()
+# Set up Selenium to use ChromeDriverManager
+service = Service(ChromeDriverManager().install())
+browser = webdriver.Chrome(service=service)
 browser.get(main_page_url)
 browser.implicitly_wait(10)
 result = browser.page_source
