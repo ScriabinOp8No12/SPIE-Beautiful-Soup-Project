@@ -1,7 +1,7 @@
 # 1. If selenium webdriver only has to load once, it should be significantly faster than it loading multiple times
 # 2. Needed code / info:
 # booth_numbers, company_name, exhibit_urls, description_text, company_website_url, company_contact
-
+import selenium
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
@@ -11,22 +11,36 @@ import pandas as pd
 from tqdm import tqdm
 
 print("There are 6 progress bars, the 4th one takes the longest, and the others are basically instant!")
+print(f"Selenium version: {selenium.__version__}")
 
-exhibits_per_page = 1500
-pages = 1
+doc = None
+browser = None
 
-main_page_url = f'https://spie.org/conferences-and-exhibitions/photonics-west/exhibitions/photonics-west-exhibition' \
-                f'/exhibitors?term=&pageSize={exhibits_per_page}&pagesVisited={pages}&sortBy=Relevance'
+try:
+    # Create Chrome options once (removed duplicate options creation)
+    options = webdriver.ChromeOptions()
+    options.add_argument('--no-sandbox')
+    options.add_argument('--disable-dev-shm-usage')
 
-# Set up Selenium to use ChromeDriverManager
-service = Service(ChromeDriverManager().install())
-browser = webdriver.Chrome(service=service)
-browser.get(main_page_url)
-browser.implicitly_wait(10)
-result = browser.page_source
+    # Initialize browser
+    browser = webdriver.Chrome(options=options)
+    print("Browser initialized successfully!")
 
-doc = BeautifulSoup(result, "html.parser")
+    exhibits_per_page = 1500
+    pages = 1
 
+    main_page_url = f'https://spie.org/conferences-and-exhibitions/photonics-west/exhibitions/photonics-west-exhibition/exhibitors' \
+                    f'/exhibitors?term=&pageSize={exhibits_per_page}&pagesVisited={pages}&sortBy=Relevance'
+
+    browser.get(main_page_url)
+    browser.implicitly_wait(10)
+    result = browser.page_source
+
+    doc = BeautifulSoup(result, "html.parser")
+
+except Exception as e:
+    print(f"Error type: {type(e)}")
+    print(f"Error details: {str(e)}")
 # exhibit links are derived by clicking on the company name (they have the name of the company as the url text!)
 exhibit_links = doc.find_all('a', {'class': 'subtitle2 companyNameText link linkBlackToBlueNoUnderline'})
 # redundant line below since they use the same part of the html
@@ -143,7 +157,7 @@ data = {
 df = pd.DataFrame(data)
 
 # convert dataframe to csv
-df.to_csv(r'C:\Users\nharw\Desktop\SPIE_West_tqdm_test.csv', index=False)
+df.to_csv(r'C:\Users\nharw\Desktop\SPIE_West_12_17_2024`.csv', index=False)
 
 # convert csv to .xlsx after wards to save the formatting, otherwise the links aren't clickable, and the columns reset
 # 15 minutes to run at home
