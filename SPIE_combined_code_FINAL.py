@@ -29,6 +29,7 @@ try:
     exhibits_per_page = 1500
     pages = 1
 
+    # https://spie.org/conferences-and-exhibitions/photonics-west/exhibitions/bios-expo/exhibitors
     main_page_url = f'https://spie.org/conferences-and-exhibitions/photonics-west/exhibitions/photonics-west-exhibition/exhibitors' \
                     f'/exhibitors?term=&pageSize={exhibits_per_page}&pagesVisited={pages}&sortBy=Relevance'
 
