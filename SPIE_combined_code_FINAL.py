@@ -26,12 +26,11 @@ try:
     browser = webdriver.Chrome(options=options)
     print("Browser initialized successfully!")
 
-    exhibits_per_page = 1500
-    pages = 1
+    exhibits_per_page = 50
+    pages = 40
 
-    # https://spie.org/conferences-and-exhibitions/photonics-west/exhibitions/bios-expo/exhibitors
-    main_page_url = f'https://spie.org/conferences-and-exhibitions/photonics-west/exhibitions/photonics-west-exhibition/exhibitors' \
-                    f'/exhibitors?term=&pageSize={exhibits_per_page}&pagesVisited={pages}&sortBy=Relevance'
+    # main_page_url = 'https://spie.org/conferences-and-exhibitions/photonics-west/exhibitions/bios-expo/exhibitors?term=&pageSize=50&pagesVisited=10&sortBy=Relevance'
+    main_page_url = f'https://spie.org/conferences-and-exhibitions/photonics-west/exhibitions/photonics-west-exhibition/exhibitors?term=&pageSize={exhibits_per_page}&pagesVisited={pages}&sortBy=Relevance'
 
     browser.get(main_page_url)
     browser.implicitly_wait(10)
@@ -83,35 +82,52 @@ for description in tqdm(company_descriptions, position=0):
         company_text = company_text[:-23].strip()           # remove 22 characters from the back of the string
     description_text.append(company_text)
 
-# Booth Number
 for url in tqdm(exhibit_urls, position=0):
-    result = requests.get(url, stream=True)
-    content = result.content
-    doc = BeautifulSoup(content, 'html.parser')
+    try:
+        result = requests.get(url, stream=True)
+        content = result.content
+        doc = BeautifulSoup(content, 'html.parser')
 
-    div_element_booth = doc.find('div', {'class': 'col-12 col-lg-8 mb30'})
+        # Extract booth number div
+        div_element_booth = doc.find('div', {'class': 'col-12 col-lg-8 mb30'})
 
-    #  Company contact info (website link and location)
-    div_element_contact_info = doc.find('div', {'class': 'col-12 col-lg-4 mb80'})
-
-    if div_element_booth == None:
-        booth_number = "No Booth Number Found"
-        # print(booth_number)
-        booth_numbers.append(booth_number)
-    else:
-        span_element_booth = div_element_booth.find('span')  # find the span element that's within the div element
-        if span_element_booth == None:
+        if div_element_booth is None:
             booth_number = "No Booth Number Found"
             booth_numbers.append(booth_number)
+            print(f"Booth info missing for URL: {url}")  # Debugging output
         else:
-            booth_text = span_element_booth.text  # Find the text of the span element, which is the booth number text below
-            booth_text = booth_text.strip().replace('\r\n', '')  # replaces thes "\r\n" at the end of the booth number output
-            # print(booth_text) # bug testing line to see total output
-            # booth_number = booth_text.split(":")[1].strip().split(" ")[0]] original code, doesn't work if more than one booth number
-            # formats booth number by splitting between the : and |    is the [0] at the end needed?
-            booth_number = booth_text.split(":")[1].strip().split("|")[0].rstrip()    # added .rstrip() at end to remove blank space at end of booth number output
-            # print(booth_number)
-            booth_numbers.append(booth_number)
+            span_element_booth = div_element_booth.find('span')
+            if span_element_booth is None:
+                booth_number = "No Booth Number Found"
+                booth_numbers.append(booth_number)
+                print(f"No span found in booth info for URL: {url}")  # Debugging output
+            else:
+                booth_text = span_element_booth.text.strip().replace('\r\n', '')
+                try:
+                    # Attempt to extract booth number using split
+                    booth_number = booth_text.split(":")[1].strip().split("|")[0].rstrip()
+                except IndexError:
+                    booth_number = "Booth Number Format Error"  # Handle unexpected format
+                    print(f"Unexpected booth number format for URL: {url}, text: {booth_text}")
+                booth_numbers.append(booth_number)
+
+        # Extract company contact info div
+        div_element_contact_info = doc.find('div', {'class': 'col-12 col-lg-4 mb80'})
+        if div_element_contact_info is None:
+            print(f"Contact info missing for URL: {url}")
+            company_contact.append("No Contact Info Found")
+        else:
+            span_element_contact_info = div_element_contact_info.find('span')
+            if span_element_contact_info is None:
+                print(f"No span found in contact info for URL: {url}")
+                company_contact.append("No Contact Info Found")
+            else:
+                contact_info_text = span_element_contact_info.text.strip()
+                company_contact.append(contact_info_text)
+
+    except Exception as e:
+        print(f"Error processing URL: {url}")
+        print(f"Error details: {str(e)}")
 
     # Finds website link below:
     span_element_contact_info = div_element_contact_info.find('span')  # span element within this SPECIFIC div element to find website
@@ -158,8 +174,7 @@ data = {
 df = pd.DataFrame(data)
 
 # convert dataframe to csv
-df.to_csv(r'C:\Users\nharw\Desktop\SPIE_West_12_17_2024`.csv', index=False)
+df.to_csv(r'C:\Users\nharw\Desktop\SPIE_WEST_1_2_2025_v3_TEST.csv', index=False)
 
-# convert csv to .xlsx after wards to save the formatting, otherwise the links aren't clickable, and the columns reset
-# 15 minutes to run at home
+# convert csv to .xlsx afterward to save the formatting, otherwise the links aren't clickable, and the columns reset
 
