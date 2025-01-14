@@ -104,7 +104,7 @@ company_contact = ["Pending"] * total_companies
 
 # PROGRESS BAR 4: Process individual company pages (slow - requires 10s delay between requests because we are accessing
 # the exhibitor's specific page and extracting the booth number and other info)
-checkpoint_interval = 10  # Save progress every 10 companies
+checkpoint_interval = 50  # Save progress every 50 companies
 try:
     for i, url in enumerate(tqdm(exhibit_urls, position=0, desc="Processing company pages")):
         try:
