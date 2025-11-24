@@ -4,6 +4,18 @@ import re
 import os
 from datetime import datetime
 
+# HOW TO USE:
+
+# 1. Go to: https://spie.org/conferences-and-exhibitions/photonics-west/exhibitions/photonics-west-exhibition/exhibitors?term=&pageSize=1500
+# 2. Open the inspect tool, and find the <div class="col-12">
+# 3. Right click, copy -> innerHTML
+# 4. Put this into the WEST_11_24_2025.html file
+# 5. Go to: https://spie.org/conferences-and-exhibitions/photonics-west/exhibitions/bios-expo/exhibitors?term=&pageSize=300
+# 6. Repeat steps 2-4, but put this into the BIOS_11_24_2025.html file
+# 7. Run this script -> open terminal, in root -> python simple_SPIE_parser.py
+# 8. Output is in the OUTPUT_11_24_2025 folder for now
+
+
 def parse_exhibitors_html(html_file, exhibition_type):
     """
     Parse exhibitors HTML file and extract company information.
