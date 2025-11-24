@@ -70,6 +70,6 @@ for info in exhibit_urls:
     address_text = ' '.join(text_nodes)
     company_contact.append(address_text)
 
-# print(company_website_url)
-# print("------------------------------------")
-# print(company_contact)
+print(company_website_url)
+print("------------------------------------")
+print(company_contact)
